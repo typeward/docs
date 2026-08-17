@@ -1,0 +1,124 @@
+---
+title: Visual editing for LaTeX
+description: Render headings, styles, lists, and math in place in a .tex file while the source on disk stays plain LaTeX.
+---
+
+import Clip from '../../../components/Clip.astro';
+
+This guide shows you how to edit a `.tex` file as a formatted document, with the LaTeX markup hidden, and how to reach that markup when you need it. Visual mode renders `.tex` files only. For Typst projects, see [Typst projects](/getting-started/typst/). Open a `.tex` file before you switch modes.
+
+## Turn on Visual mode
+
+The source pane has two modes for `.tex` files. **Source** shows the raw LaTeX you typed. **Visual** renders headings, text styles, lists, citations, and math in place while you keep editing, so a chapter reads like a document instead of a wall of backslashes.
+
+Visual mode never shows the markup, not even under the cursor. You edit visible text directly, and everything else through a small popover. Visual mode works offline and needs no language server and no compile.
+
+<Clip
+  name="visual-editing"
+  label="Screencast of the Source and Visual control rendering headings, styles, and lists in place, then returning the file to raw LaTeX."
+/>
+
+Three routes turn Visual mode on.
+
+- Select **Visual** in the **Source | Visual** control at the end of the [format toolbar](/editor/overview/).
+- Press `Ctrl+Shift+V` (`Cmd+Shift+V` on macOS), or run **Toggle Visual Editing** from the command palette.
+- Turn on **Visual editing for LaTeX** under **Settings → Editor**.
+
+The control appears whenever a `.tex` file is active, and the command palette opens with `Ctrl+K` (`Cmd+K` on macOS). The shortcut still works in focus mode, where the format toolbar is hidden. All three routes write the same preference.
+
+The mode is one preference for every `.tex` file, and it is off until you turn it on. Typeward saves it locally with the rest of your editor settings, so it is still in force the next time you open the app.
+
+Switching modes is instant, and it changes nothing in the file. Your cursor position, scroll position, undo history, and the running language-server session all survive the switch.
+
+## Known limitations
+
+- Visual mode renders `.tex` files only. `.bib` files and Typst files always show source.
+- Visual mode forces line wrapping on for the file, and forces line numbers and the active-line highlight off. Those settings are untouched and come back in **Source**.
+- Typeward suspends [Vim or Emacs keybindings](/editor/focus-and-vim/) for a file in Visual mode, because modal bindings and atomic widgets do not mix. Returning the file to **Source** resumes them.
+- The caret cannot enter a rendered widget. You edit math, pills, chips, figures, tables, and the preamble in the popover.
+
+## Compare the source with the rendered view
+
+This table lists what the source pane renders in Visual mode, construct by construct.
+
+| In the source | In Visual mode |
+| --- | --- |
+| `\part{...}`, `\chapter{...}`, `\section{...}`, `\subsection{...}`, `\subsubsection{...}`, `\paragraph{...}`, `\subparagraph{...}` (and `*` variants) | The title styled as a heading, sized by its level; the command and braces are hidden |
+| `\textbf{...}`, `\textit{...}`, `\emph{...}`, `\underline{...}` | Bold, italic, and underlined text, nesting included |
+| `itemize`, `enumerate`, `description` | `\item` becomes a bullet or a number, with hanging indent; `\item[custom]` keeps its custom label |
+| `quote` and `quotation` environments | Indented block with a left border |
+| `verbatim`, `lstlisting`, and `minted` environments | Monospaced block; the contents are never interpreted |
+| `\cite`, `\ref`, `\eqref`, `\autoref`, `\label` | The key or keys, as a compact pill |
+| `%` comments | Dimmed text |
+| Math: `$...$` and `\(...\)` inline; `\[...\]`, `$$...$$`, and the `equation`, `align`, `gather`, `multline`, `eqnarray`, and `displaymath` environments (starred forms included) | Typeset by KaTeX. Inline math sits inside the line; display math is a centered block badged with the environment name, and `\[...\]` and `$$...$$` are badged "equation" |
+| `figure` and `figure*` environments | A figure card: the `\includegraphics` image when its format is previewable and the path resolves inside the project, otherwise a placeholder naming the file, with the caption below it |
+| `table`, `tabular`, and `longtable` environments (starred forms included) | The innermost `tabular` rows, or the environment body itself when there is no nested `tabular`, as a grid with the first row as its header, and the caption below it; cells the preview cannot reduce to plain text fall back to a card |
+| `abstract`, `center`, `flushleft`, `flushright`, the theorem-like environments (`theorem`, `lemma`, `proof`, `definition`, `corollary`, `proposition`, `remark`, `example`), the beamer environments (`frame`, `columns`, `column`, `block`), `IEEEkeywords`, and `tcolorbox` | The contents render as prose with the `\begin` and `\end` lines hidden; `center` is centered |
+| Any environment Typeward does not recognize | A card badged with the environment name; its body stays hidden |
+
+Math, figures, tables, cards, and reference pills are single widgets rather than text. Select one to edit its LaTeX in the popover.
+
+The preamble, meaning everything up to `\begin{document}`, collapses to one line marked with a ⚙ icon. That line names the document class and its options, for example "Document settings: article · 11pt". Select it to open the preamble in the popover, or switch to **Source** to edit it inline. Typeward never folds a fragment file that has no `\begin{document}` of its own, such as a chapter pulled in with `\input`.
+
+## Edit through the popover
+
+Markup stays hidden even while the cursor sits inside a construct. Typing in a heading title, a bold run, or a list item edits the real source between the braces. Anything that renders as one widget is atomic, so the caret cannot enter it, and selections, search matches, and SyncTeX inverse-search jumps snap to its edge instead.
+
+The popover is the one place Visual mode shows source. It is headed **Edit LaTeX**, or **Document settings (preamble)** for the preamble, or **Insert math** for math you are about to write.
+
+1. Select the widget you want to change. Typeward opens the popover with that construct's LaTeX in it.
+2. Edit the LaTeX in the input. A math draft carries a live KaTeX preview under the input as you type.
+3. Press `Ctrl+Enter` (`Cmd+Enter` on macOS) or select **Apply**, and the edit goes into the file.
+
+**Cancel** and `Escape` both close the popover and leave the construct unchanged.
+
+A few keystrokes behave differently in prose.
+
+- Typing a dollar sign (`$`) opens the popover headed **Insert math** instead of inserting the character.
+- A typed `%`, `&`, `#`, `_`, `{`, or `}` goes in escaped, and a typed backslash (`\`) becomes `\textbackslash{}`.
+- `Shift+Enter` inserts a LaTeX line break (`\\`), which renders as a ⏎ chip.
+
+Inside verbatim blocks and comments those characters go in literally, because that is what they mean there.
+
+Applying an edit is guarded. The popover snapshots the construct when it opens, and **Apply** writes only if that exact text is still where it was, or is found close by. An external write or a cloud sync landing can move it. In that case Typeward refuses the edit with a "Couldn't apply the edit" notice instead of writing over text it can no longer identify.
+
+For anything the popover does not cover, switch to **Source**.
+
+## Write in either mode
+
+Visual mode is presentation only. There is no second document format and no conversion in either direction. Typeward decorates the one real source text, and every edit, in either mode, is an ordinary edit to that text. That has three consequences.
+
+- Save, autosave, compile, [version history](/projects/version-history/), git, and exports see byte-identical files whichever mode you write in.
+- Copying a rendered heading copies `\section{...}`, because the source is what sits on your disk and in your clipboard.
+- Search, diagnostics, and SyncTeX all operate on real source positions.
+
+Switching a file to Visual and back cannot change it.
+
+## Check that it worked
+
+Visual mode is on when the **Visual** segment is selected and your `\section` lines read as styled headings, with no commands and no braces showing. Select **Source** to see the same file as raw LaTeX, byte for byte what it was before you switched.
+
+## If it does not work
+
+Rendering is best-effort. A construct Typeward cannot render degrades to something readable and clickable, never to an error.
+
+| What you see | What it means |
+| --- | --- |
+| A chip labeled in plain text, such as "Table of contents" | Typeward could not cleanly bound a command it knows, so the chip carries its readable name |
+| A chip labeled with a command name and no backslash | Typeward could not cleanly bound the command, and holds no readable name for it |
+| A chip labeled "math ⚠", or an environment name followed by ⚠ | KaTeX cannot parse that math |
+| A chip showing a single brace | The brace has no match |
+| A dimmed placeholder naming a construct, such as "small caps", "superscript", or "text" | Nothing is left inside the construct |
+| The **Visual** segment disabled, after a one-time "Visual mode paused" notice | The file is too large or unusual to render live |
+
+Typeward cannot cleanly bound a construct when a brace is unbalanced, or when a heading or citation argument runs past the scanner's limit or across lines. An optional argument does not defeat the scanner: `\cite[p. 3]{key}` renders as one pill labeled with the key.
+
+Every chip carries a tooltip with its source, and the stray-brace tooltip reads "Unmatched brace". Select any chip to open the popover. A dimmed placeholder stays visible and clickable too, so an emptied construct never disappears from the source pane.
+
+A paused file stays in source for the rest of the session, and the **Visual** segment is disabled for it. Your setting is untouched, every other file stays visual, and reopening the app retries.
+
+## See also
+
+- [Editor overview](/editor/overview/)
+- [Focus mode and keybindings](/editor/focus-and-vim/)
+- [Version history](/projects/version-history/)

@@ -1,0 +1,53 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Workflow default is read-only; the Pages/OIDC grants live on the deploy job
+# alone, so the build job (which runs the site's own dependency tree) can never
+# publish or mint an OIDC token.
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - name: Set up Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      # astro build does not type-check; without this gate a commit that fails
+      # `npm run check` in CI would still deploy, since both workflows trigger
+      # independently on push to main.
+      - name: Astro check
+        run: npm run check
+      - name: Build with Astro
+        uses: withastro/action@a4407e937037e68022f04ae1c068d3634f08bc8d # v4.2.1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

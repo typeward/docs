@@ -1,0 +1,215 @@
+/* Typeward brand tokens for Starlight, matching the desktop app's themes:
+   Lamplight (dark -- near-black warm bg, parchment text, amber lamp accent)
+   and Daylight (light -- warm ivory paper, charcoal ink, brass accent).
+   Values come from app/src/themes/themes/{lamplight,daylight}.css; alpha
+   tokens are composited to solid hex over the page background. The light
+   accent uses Daylight's deeper brass #7d6335 (the palette's AA-annotated
+   chip tone) because the emphasis brass #8a6d3b measures 4.41:1 on ivory. */
+
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+:root {
+	--sl-font: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+	--sl-font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', monospace;
+}
+
+/* Dark mode -- Lamplight */
+:root {
+	--sl-color-accent-low: #432810;
+	--sl-color-accent: #c2691e;
+	--sl-color-accent-high: #e8a34d;
+
+	--sl-color-white: #ede6d8;
+	--sl-color-gray-1: #cbc5b9;
+	--sl-color-gray-2: #aaa59a;
+	--sl-color-gray-3: #8a867d;
+	--sl-color-gray-4: #67635c;
+	--sl-color-gray-5: #322f28;
+	--sl-color-gray-6: #1c1a14;
+	--sl-color-black: #0d0c0a;
+}
+
+/* Light mode -- Daylight */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #ebe2ce;
+	--sl-color-accent: #7d6335;
+	--sl-color-accent-high: #6d5527;
+
+	--sl-color-white: #22211e;
+	--sl-color-gray-1: #3b3831;
+	--sl-color-gray-2: #5b564d;
+	--sl-color-gray-3: #756e62;
+	--sl-color-gray-4: #938a7e;
+	--sl-color-gray-5: #c9bfac;
+	--sl-color-gray-6: #efece2;
+	--sl-color-gray-7: #f3efe3;
+	--sl-color-black: #f8f4ea;
+}
+
+/* Starlight ships a print reset that forces a light palette, but it is the one
+   Starlight sheet with no @layer wrapper and its <link media="print"> is
+   emitted just before this file's bundle. Both target a bare :root, so document
+   order decides and the dark block above wins on paper: parchment ink on white,
+   headings at about 1.2:1, beside the light mark that print:block does force
+   through. Re-assert Daylight for print. The [data-theme='light'] block
+   outranks this one and already carries the same values. */
+@media print {
+	:root {
+		--sl-color-accent-low: #ebe2ce;
+		--sl-color-accent: #7d6335;
+		--sl-color-accent-high: #6d5527;
+
+		--sl-color-white: #22211e;
+		--sl-color-gray-1: #3b3831;
+		--sl-color-gray-2: #5b564d;
+		--sl-color-gray-3: #756e62;
+		--sl-color-gray-4: #938a7e;
+		--sl-color-gray-5: #c9bfac;
+		--sl-color-gray-6: #efece2;
+		--sl-color-gray-7: #f3efe3;
+		--sl-color-black: #f8f4ea;
+	}
+}
+
+/* Starlight styles in-content links with color alone; no amber/brass that
+   passes 4.5:1 on the background also reaches the 3:1 that color-only
+   differentiation needs against the gray body text (WCAG 1.4.1), so
+   underline them. */
+.sl-markdown-content a:not(:where(.not-content *)) {
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+/* The header logo is the bare letterform, not a tile. Starlight sizes a logo
+   to the full nav height, which is right for a padded icon and too tall for a
+   letter: it towers over the title beside it. Set against the title's own
+   size instead. */
+a.site-title img {
+	height: 1.75rem;
+	width: auto;
+}
+
+/* ── App media ─────────────────────────────────────────────────────────────
+   Screenshots and clips are captures of a frameless desktop window, so they
+   need a bezel to read as an application rather than as a stray rectangle of
+   UI. Same treatment as the marketing hero's window (web/src/styles/global.css
+   .lp-window): a soft radius, one hairline stroke, and a deep drop shadow. */
+:root {
+	--tw-frame-radius: 14px;
+	/* A drop shadow cannot separate a dark window from a dark page, so the dark
+	   bezel leans on a brighter rim and the hero's faint amber halo instead. */
+	--tw-frame-stroke: rgb(255 255 255 / 0.2);
+	--tw-frame-shadow:
+		0 8px 32px rgb(0 0 0 / 0.5), 0 0 70px rgb(232 163 77 / 0.07),
+		0 40px 80px -36px rgb(0 0 0 / 0.9);
+	/* Deliberately dark in both themes: every capture is the app's Lamplight
+	   theme, so the reserved box matches what lands in it and nothing flashes. */
+	--tw-frame-bg: #14110d;
+}
+
+:root[data-theme='light'] {
+	--tw-frame-stroke: #c9bfac;
+	--tw-frame-shadow:
+		0 10px 30px rgb(34 33 30 / 0.07), 0 1px 2px rgb(34 33 30 / 0.05),
+		0 40px 70px -34px rgb(34 33 30 / 0.4);
+}
+
+.sl-markdown-content img:not(:where(.not-content *)),
+.app-frame {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: var(--tw-frame-radius);
+	border: 1px solid var(--tw-frame-stroke);
+	background: var(--tw-frame-bg);
+	box-shadow: var(--tw-frame-shadow);
+}
+
+.app-clip {
+	position: relative;
+	margin: 1.5rem 0;
+}
+
+/* Always present once the script owns the clip, so keyboard users can reach it
+   and everyone can see there is a way to stop the motion; it just keeps quiet
+   until pointed at. Before that (and if the module never runs) it is [hidden],
+   and the video keeps its native controls, so this must not paint. */
+.app-clip-toggle[hidden] {
+	display: none;
+}
+
+.app-clip-toggle {
+	position: absolute;
+	right: 0.7rem;
+	bottom: 0.7rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	padding: 0;
+	border: 1px solid rgb(255 255 255 / 0.18);
+	border-radius: 999px;
+	background: rgb(20 17 14 / 0.86);
+	color: #f4ece1;
+	/* Not dimmer than this: the clips run over a white PDF page for seconds at a
+	   time, and a fainter chip drops under the 3:1 that SC 1.4.11 asks of a
+	   control's own contrast. */
+	opacity: 0.85;
+	cursor: pointer;
+	transition:
+		opacity 150ms ease,
+		background-color 150ms ease;
+	backdrop-filter: blur(6px);
+}
+
+.app-clip:hover .app-clip-toggle,
+.app-clip-toggle:hover,
+.app-clip-toggle:focus-visible {
+	opacity: 1;
+	background: rgb(20 17 14 / 0.9);
+}
+
+.app-clip-toggle svg {
+	width: 1.05rem;
+	height: 1.05rem;
+}
+
+.app-clip-toggle .app-clip-pause,
+.app-clip[data-state='playing'] .app-clip-toggle .app-clip-play {
+	display: none;
+}
+
+.app-clip[data-state='playing'] .app-clip-toggle .app-clip-pause {
+	display: block;
+}
+
+/* The app is a 1440px-wide window; on a wide screen the prose column would
+   shrink it past reading size, so let the media spill into the gutter beside
+   it. The spill is start-side only: with a table of contents Starlight sets
+   --sl-content-margin-inline to "auto 0", which right-aligns the column, so all
+   the free space is on the left and anything spilling right lands under the
+   table of contents. Below 100rem there is not enough of that gutter to be
+   worth taking. */
+@media (min-width: 100rem) {
+	.sl-markdown-content > p:has(> img:only-child),
+	.sl-markdown-content > .app-clip {
+		width: calc(100% + 4rem);
+		margin-inline-start: -4rem;
+	}
+}
+
+@media (min-width: 112rem) {
+	.sl-markdown-content > p:has(> img:only-child),
+	.sl-markdown-content > .app-clip {
+		width: calc(100% + 8rem);
+		margin-inline-start: -8rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.app-clip-toggle {
+		transition: none;
+	}
+}

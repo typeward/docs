@@ -1,0 +1,114 @@
+---
+// A recorded app demo: the clip itself, its poster, and a pause control.
+//
+// The clips auto-play and loop, which is only acceptable with a way to stop
+// them (WCAG 2.2.2), so every clip carries a toggle and honours
+// prefers-reduced-motion by staying on its poster until asked. Markup ships
+// with `controls` so the video is still usable if the module never runs; the
+// script strips them and takes over.
+//
+// Sources come from scripts/screens/postprocess.mjs: <name>.webm (VP9) and
+// <name>.mp4 (H.264, for players without WebM), plus the poster PNG that the
+// same pass pulls from the clip's first frame.
+import { getImage } from 'astro:assets';
+
+interface Props {
+  /** File stem shared by the clip's webm, mp4, and poster. */
+  name: string;
+  /** What the clip shows, for people who cannot see it play. */
+  label: string;
+}
+
+const { name, label } = Astro.props;
+
+const posters = import.meta.glob<{ default: ImageMetadata }>('../assets/screens/clips/*.png', {
+  eager: true,
+});
+const entry = posters[`../assets/screens/clips/${name}.png`];
+if (!entry) throw new Error(`Clip: no poster for "${name}" in src/assets/screens/clips/`);
+const poster = await getImage({ src: entry.default, format: 'webp', width: 1440 });
+---
+
+<figure class="app-clip not-content" data-clip>
+  <video
+    class="app-frame"
+    poster={poster.src}
+    width="1920"
+    height="1200"
+    loop
+    muted
+    playsinline
+    controls
+    preload="none"
+    aria-label={label}
+  >
+    <source src={`/videos/${name}.webm`} type="video/webm" />
+    <source src={`/videos/${name}.mp4`} type="video/mp4" />
+  </video>
+  <button type="button" class="app-clip-toggle" data-clip-toggle hidden aria-label="Play the demo">
+    <svg class="app-clip-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M8 5v14l11-7z" fill="currentColor"></path>
+    </svg>
+    <svg class="app-clip-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"></path>
+    </svg>
+  </button>
+</figure>
+
+<script>
+  // Progressive enhancement: swap the native controls for one toggle, start
+  // the clip when it scrolls into view, and stop it when it leaves. A clip the
+  // reader paused stays paused, including across scrolls.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('[data-clip]').forEach((figure) => {
+    const video = figure.querySelector('video');
+    const toggle = figure.querySelector<HTMLButtonElement>('[data-clip-toggle]');
+    if (!video || !toggle) return;
+
+    video.removeAttribute('controls');
+    toggle.hidden = false;
+
+    let wantsPlay = !reduced.matches;
+    let onScreen = false;
+
+    const sync = () => {
+      const playing = !video.paused;
+      figure.dataset.state = playing ? 'playing' : 'paused';
+      toggle.setAttribute('aria-label', playing ? 'Pause the demo' : 'Play the demo');
+    };
+
+    const apply = () => {
+      if (wantsPlay && onScreen) video.play().catch(() => {});
+      else video.pause();
+      sync();
+    };
+
+    toggle.addEventListener('click', () => {
+      wantsPlay = video.paused;
+      // A deliberate press should start the clip even if it is only half in
+      // view, so the intersection gate does not veto it.
+      onScreen = onScreen || wantsPlay;
+      apply();
+    });
+
+    video.addEventListener('play', sync);
+    video.addEventListener('pause', sync);
+    reduced.addEventListener('change', (event) => {
+      wantsPlay = !event.matches;
+      apply();
+    });
+
+    new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          onScreen = entry.isIntersecting;
+          apply();
+        }
+      },
+      { threshold: 0.25 },
+    ).observe(figure);
+
+    sync();
+  });
+</script>

@@ -1,0 +1,59 @@
+---
+title: Typeward documentation
+description: Documentation for Typeward, a free, open-source LaTeX and Typst editor for Windows, macOS, and Linux. Plain folders, local compiling, no account.
+template: splash
+hero:
+  title: Typeward documentation
+  tagline: A free, open-source LaTeX and Typst editor for Windows, macOS, and Linux. Your projects are plain folders on your disk, the whole compile loop runs on your machine, and there is no account, no server, and no paid tier.
+  actions:
+    - text: Get started
+      link: /getting-started/what-is-typeward/
+      icon: right-arrow
+    - text: Download from GitHub
+      link: https://github.com/typeward/releases/releases
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import MathField from '../../components/MathField.astro';
+
+<MathField />
+
+## Start here
+
+<CardGrid stagger>
+	<Card title="Install Typeward" icon="rocket">
+		Set it up on [Windows](/getting-started/install-windows/),
+		[macOS](/getting-started/install-macos/), or
+		[Linux](/getting-started/install-linux/), or
+		[build it from source](/getting-started/build-from-source/).
+	</Card>
+	<Card title="Your first project" icon="document">
+		[Create a project from a template](/getting-started/first-project/) and
+		compile it to PDF in a couple of minutes, in
+		[LaTeX](/getting-started/latex-basics/) or
+		[Typst](/getting-started/typst/).
+	</Card>
+	<Card title="Coming from Overleaf?" icon="open-book">
+		[Import your Overleaf projects](/getting-started/import-from-overleaf/)
+		from a zip export or a git-bridge clone and keep working locally.
+	</Card>
+	<Card title="Learn the editor" icon="pencil">
+		Take the [editor tour](/editor/overview/), or jump straight to
+		[visual editing](/editor/visual-editing/) and
+		[reference navigation](/editor/latex-navigation/).
+	</Card>
+	<Card title="Connect your tools" icon="puzzle">
+		Put projects under [git](/projects/git/), sync them over
+		[WebDAV](/projects/cloud-sync/), pull citations from
+		[Zotero or Mendeley](/references/connecting-reference-managers/), or
+		enable the optional [AI assistant](/ai/overview/).
+	</Card>
+	<Card title="Open source" icon="github">
+		Typeward is GPL-3.0-or-later. Read
+		[what that means for you](/reference/open-source/), and how the app
+		[behaves on the network](/reference/privacy-and-network/): silent by
+		default, with nothing to opt out of.
+	</Card>
+</CardGrid>

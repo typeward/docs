@@ -1,0 +1,69 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R /F2 8 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1172 >>
+stream
+BT /F1 20 Tf 229.2 700 Td (My first article) Tj ET
+BT /F1 12 Tf 297.4 668 Td (you) Tj ET
+BT /F1 11 Tf 271.7 650 Td (July 31, 2026) Tj ET
+BT /F2 11 Tf 284.9 606 Td (Abstract) Tj ET
+BT /F1 10 Tf 126 588 Td (A short note written in Typeward. The whole loop, editing, compiling, and preview,) Tj ET
+BT /F1 10 Tf 126 575 Td (happens on this machine; this page is the compiled output of main.tex.) Tj ET
+BT /F2 14 Tf 72 540 Td (1   Introduction) Tj ET
+BT /F1 11 Tf 72 516 Td (Typesetting is a solved problem; waiting for it is not. A local compiler admits no) Tj ET
+BT /F1 11 Tf 72 501 Td (queue, so the round trip from keystroke to page collapses to the time your own) Tj ET
+BT /F1 11 Tf 72 486 Td (hardware needs. Consider the identity) Tj ET
+BT /F1 12 Tf 271.4 448 Td (a² + b² = c²) Tj ET
+BT /F1 11 Tf 500 448 Td (\(1\)) Tj ET
+BT /F1 11 Tf 72 420 Td (set from a single line of source, hyphenated and justified in the same pass.) Tj ET
+BT /F2 14 Tf 72 360 Td (2   Method) Tj ET
+BT /F1 11 Tf 72 336 Td (Write in the source pane on the left; save with Ctrl+S and the compiled page on) Tj ET
+BT /F1 11 Tf 72 321 Td (the right catches up.) Tj ET
+BT /F1 10 Tf 303.6 40 Td (1) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 7 0 R /F2 8 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 434 >>
+stream
+BT /F2 14 Tf 72 700 Td (3   Results) Tj ET
+BT /F1 11 Tf 72 676 Td (The compile finished in under a second, and the preview swapped the new pages in) Tj ET
+BT /F1 11 Tf 72 661 Td (without a flash.) Tj ET
+BT /F2 14 Tf 72 616 Td (4   Discussion) Tj ET
+BT /F1 11 Tf 72 592 Td (Plain files in a plain folder: this project compiles the same way from the command) Tj ET
+BT /F1 11 Tf 72 577 Td (line.) Tj ET
+BT /F1 10 Tf 303.6 40 Td (2) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>
+endobj
+8 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000257 00000 n 
+0000001481 00000 n 
+0000001617 00000 n 
+0000002102 00000 n 
+0000002201 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+2299
+%%EOF

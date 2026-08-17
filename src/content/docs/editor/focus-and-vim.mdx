@@ -1,0 +1,93 @@
+---
+title: Focus mode and keybindings
+description: Focus mode hides the editor chrome, and the Keybindings setting gives the source pane Vim or Emacs bindings.
+---
+
+import Clip from '../../../components/Clip.astro';
+
+This guide shows you how to hide the editor chrome with focus mode, and how to give the source pane Vim or Emacs editing bindings. For the full list of bound shortcuts, see [Keyboard shortcuts](/reference/keyboard-shortcuts/). Open a project before you turn on focus mode.
+
+## Turn on focus mode
+
+Focus mode hides the top bar, the sidebar, the file tabs, the format toolbar, and the status bar, leaving the source pane and the preview pane. It keeps the pane layout you are in, so in **Editor only** layout focus mode shows the source pane by itself.
+
+<Clip
+  name="focus-mode"
+  label="Screencast of Ctrl+Shift+F hiding the editor chrome down to the source and preview panes, then restoring it."
+/>
+
+Three routes toggle focus mode.
+
+- Press `Ctrl+Shift+F` (`Cmd+Shift+F` on macOS).
+- Run **Toggle Focus Mode** from the command palette, which opens with `Ctrl+K` (`Cmd+K` on macOS).
+- On macOS, select **View → Focus Mode** in the menu bar.
+
+In the palette, the command sits in the **View** group under the subtitle "Hide editor chrome: just source and page".
+
+To leave focus mode, press the shortcut again or select the **Exit focus** pill in the lower right of the window. `Escape` never leaves focus mode.
+
+Focus mode lasts for the session only. Typeward never records it, so the app always reopens with the chrome visible. The split between the panes and the sidebar width are persisted settings shared by the normal and focus layouts. Leaving focus mode resets neither one, and neither does relaunching the app.
+
+## Work with the chrome hidden
+
+Every shortcut keeps working while the chrome is hidden. `Ctrl+B` (`Cmd+B` on macOS) and `Ctrl+I` (`Cmd+I` on macOS) format without the toolbar, and `Ctrl+S` (`Cmd+S` on macOS) saves and compiles.
+
+Focus mode also hides the logs panel in the **Bottom drawer** position, so where a failed compile reports depends on your **Logs** setting.
+
+- With **In preview panel**, the default, the logs sit beside the PDF in the preview pane, and a failed compile switches that pane to the logs panel.
+- With **Bottom drawer**, a failed compile raises a **Compile failed** toast whose **View errors** button leaves focus mode and opens the logs panel at the **Errors** tab.
+
+## Switch the source pane to Vim or Emacs
+
+Vim and Emacs editing bindings are one setting.
+
+1. Open **Settings → Editor**.
+2. In the **Keybindings** row, select **Vim** or **Emacs**.
+
+The default is **None**, and the hint under the row reads "Vim or Emacs editing bindings for the source pane. None keeps the standard bindings."
+
+The **Keybindings** row carries three options.
+
+| Option | What the source pane gets | Library |
+| --- | --- | --- |
+| **None** | The standard editing bindings | No library |
+| **Vim** | Normal, insert, and visual modes, motions, operators, registers, and the ex commands the library implements | `@replit/codemirror-vim` |
+| **Emacs** | The Emacs-style editing chords the library implements | `@replit/codemirror-emacs` |
+
+Typeward loads both libraries unmodified. Each one loads the first time you select it, and with **None** selected Typeward loads neither. Neither engine reaches the sidebar, the preview pane, or any dialog.
+
+Typeward stores your choice on this machine, in the same [local settings file](/reference/data-locations/) as the rest of your editor settings. Typeward also migrates older settings files, so an old **Vim mode** switch that was turned on arrives as **Vim**.
+
+## Known limitations
+
+- Typeward pauses the Vim or Emacs engine while [visual editing](/editor/visual-editing/) renders a `.tex` file, because modal bindings and the rendered widgets conflict. The setting itself is untouched, and turning visual editing off resumes the engine.
+- Typeward adds no configuration layer on top of the libraries. There is no vimrc, no custom mappings, and no options beyond the three choices in the **Keybindings** row.
+- App shortcuts cannot be rebound. **Settings → Keyboard** lists every bound shortcut read-only and says so itself: `Remapping isn't supported yet.`
+- Emacs chords are Ctrl-based, and some share a key with an app shortcut such as `Ctrl+S`. Typeward runs the app command in every case, and the Emacs binding may also run.
+
+## Keep app shortcuts working
+
+In the source pane, the Vim or Emacs keymap runs ahead of the other editor keymaps and wins the keys it binds. Typeward routes app shortcuts outside the editor keymaps, so these shortcuts keep working.
+
+| Shortcut | What it does |
+| --- | --- |
+| `Ctrl+S` (`Cmd+S` on macOS) | Saves and compiles |
+| `Ctrl+Enter` (`Cmd+Enter` on macOS) | Compiles |
+| `Ctrl+K` (`Cmd+K` on macOS) | Opens the command palette |
+| `Ctrl+P` (`Cmd+P` on macOS) | Goes to a file |
+| `Ctrl+W` (`Cmd+W` on macOS) | Closes the tab |
+| `Ctrl+Tab` (literal `Ctrl` on macOS as well) | Cycles tabs |
+
+Vim takes two of these on Windows and Linux. Vim binds `Ctrl+P` as "line up" in normal and visual mode, and `Ctrl+W` as "delete word back" in insert mode and as an ignored key in normal mode. Vim swallows the key instead of passing it on, so **Go to file** and **Close tab** never fire. Run both from the command palette, which `Ctrl+K` still opens. On macOS the shortcuts are `Cmd+P` and `Cmd+W`, which Vim leaves alone. Emacs swallows nothing, so every row above works with Emacs on every platform.
+
+## Check that it worked
+
+Focus mode is on when the top bar, the sidebar, and the status bar are gone and the **Exit focus** pill is showing. Press `Ctrl+Shift+F` again to bring all of them back.
+
+The editing bindings are live when the source pane answers the engine's keys. The sidebar, the preview pane, and dialogs keep the standard bindings, so test inside the source pane.
+
+## See also
+
+- [Editor overview](/editor/overview/)
+- [Visual editing for LaTeX](/editor/visual-editing/)
+- [Keyboard shortcuts](/reference/keyboard-shortcuts/)
